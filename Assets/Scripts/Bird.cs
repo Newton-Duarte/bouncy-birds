@@ -11,6 +11,9 @@ public class Bird : MonoBehaviour
     LineRenderer lr;
     [SerializeField] float maxDragDistance = 2;
     [SerializeField] float launchPower = 350;
+    [SerializeField] AudioSource sourceFx;
+    [SerializeField] AudioClip wooshFx;
+    [SerializeField] AudioClip impactFx;
 
     // Start is called before the first frame update
     void Start()
@@ -27,10 +30,14 @@ public class Bird : MonoBehaviour
     {
         if (FindAnyObjectByType<Enemy>(FindObjectsInactive.Exclude) == null)
         {
-            Debug.Log("Game Over");
-            int levelToLoad = SceneManager.GetActiveScene().buildIndex + 1;
-            SceneManager.LoadScene(levelToLoad);
+            Invoke(nameof(LoadNextLevel), 1f);
         }
+    }
+
+    void LoadNextLevel()
+    {
+        int levelToLoad = SceneManager.GetActiveScene().buildIndex + 1;
+        SceneManager.LoadScene(levelToLoad);
     }
 
     void OnMouseUp()
@@ -39,6 +46,7 @@ public class Bird : MonoBehaviour
         rb.AddForce(directionAndMagnitude * launchPower);
         rb.gravityScale = 1;
         lr.enabled = false;
+        sourceFx.PlayOneShot(wooshFx);
     }
 
     void OnMouseDrag()
@@ -56,6 +64,12 @@ public class Bird : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
+        if (collision.gameObject.CompareTag("Respawn"))
+        {
+            ReloadLevel();
+            return;
+        }
+        sourceFx.PlayOneShot(impactFx);
         Invoke(nameof(ReloadLevel), 5);
     }
 
