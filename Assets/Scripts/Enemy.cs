@@ -11,4 +11,9 @@ public class Enemy : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    void OnBecameInvisible()
+    {
+        Destroy(gameObject);
+    }
 }
