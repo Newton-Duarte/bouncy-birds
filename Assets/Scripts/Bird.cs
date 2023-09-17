@@ -7,7 +7,8 @@ public class Bird : MonoBehaviour
 {
     Vector3 startPosition;
     Rigidbody2D rb;
-    [SerializeField] float launchPower = 250;
+    [SerializeField] float maxDragDistance = 2;
+    [SerializeField] float launchPower = 350;
 
     // Start is called before the first frame update
     void Start()
@@ -38,6 +39,10 @@ public class Bird : MonoBehaviour
     {
         Vector3 destination = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         destination.z = 0;
+        if (Vector2.Distance(destination, startPosition) > maxDragDistance)
+        {
+            destination = Vector3.MoveTowards(startPosition, destination, maxDragDistance);
+        }
         transform.position = destination;
     }
 }
