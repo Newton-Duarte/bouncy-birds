@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,7 @@ public class Bird : MonoBehaviour
 {
     Vector3 startPosition;
     Rigidbody2D rb;
+    LineRenderer lr;
     [SerializeField] float maxDragDistance = 2;
     [SerializeField] float launchPower = 350;
 
@@ -15,6 +17,9 @@ public class Bird : MonoBehaviour
     {
         startPosition = transform.position;
         rb = GetComponent<Rigidbody2D>();
+        lr = GetComponent<LineRenderer>();
+        lr.SetPosition(0, transform.position);
+        lr.enabled = false;
     }
 
     // Update is called once per frame
@@ -33,6 +38,7 @@ public class Bird : MonoBehaviour
         Vector3 directionAndMagnitude = startPosition - transform.position;
         rb.AddForce(directionAndMagnitude * launchPower);
         rb.gravityScale = 1;
+        lr.enabled = false;
     }
 
     void OnMouseDrag()
@@ -44,5 +50,17 @@ public class Bird : MonoBehaviour
             destination = Vector3.MoveTowards(startPosition, destination, maxDragDistance);
         }
         transform.position = destination;
+        lr.SetPosition(1, transform.position);
+        lr.enabled = true;
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        Invoke(nameof(ReloadLevel), 5);
+    }
+
+    void ReloadLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
